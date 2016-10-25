@@ -14,4 +14,7 @@
     <string name="register_success">Account Successfully Created!</string>
     <string name="authenticating">Authenticating…</string>
     <string name="creating_account">Creating Account…</string>
+
+    // Tabbed layout
+    <string name="section_format">Hello World from section: %1$d</string>
 </resources>
