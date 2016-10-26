@@ -38,15 +38,16 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
-        View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     private static final int RC_SIGN_IN = 9001;
     private GoogleApiClient mGoogleApiClient;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private boolean googleLogin = false;
+    private boolean defaultLogin = false;
 
     @Bind(R.id.input_email_layout) TextInputLayout _emailInput;
     @Bind(R.id.input_password_layout) TextInputLayout _passwordInput;
@@ -62,18 +63,19 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
+        // Google login
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
+
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
         // FireBase
         mAuth = FirebaseAuth.getInstance();
-
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -85,24 +87,29 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
-                // ...
             }
         };
 
+        // Google account login
         _googleImage.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                loginGoogle();
-            }
-        });
-        _loginButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
+            public void onClick(View v){
+                googleLogin = true;
                 login();
             }
         });
 
+        // Email & Password login
+        _loginButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                defaultLogin = true;
+                login();
+            }
+        });
+
+        // Link to sign-up page
         _signupLink.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -126,14 +133,47 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
     }
 
-    private void loginGoogle() {
-        // Configure Google Sign In
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // If Google login
+        if(googleLogin){
+            if (requestCode == RC_SIGN_IN) {
+                GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                if (result.isSuccess()) {
+                    // Google Sign In was successful, authenticate with Firebase
+                    GoogleSignInAccount account = result.getSignInAccount();
+                    firebaseAuthWithGoogle(account);
+                    Log.d(TAG, "onActivityResult: Google sign-in");
+                } else {
+                    // Google Sign In failed, update UI appropriately
+
+                }
+            }
+        }
+        // If just email and password login
+        else if (defaultLogin){
+            if (requestCode == REQUEST_SIGNUP) {
+                if (resultCode == RESULT_OK) {
+                    // By default we just finish the Activity and log them in automatically
+                    Log.d(TAG, "onActivityResult: Default sign-in");
+                    this.finish();
+                }
+            }
+        }
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+
+        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
+                R.style.AppTheme_Dark_Dialog);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage(LoginActivity.this.getString(R.string.authenticating));
+
+        progressDialog.show();
+
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -146,64 +186,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "signInWithCredential", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                            finish();
-                        }
-                    }
-                });
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
-    }
-
-    public void login() {
-        Log.d(TAG, "Login");
-
-        if (!validate()) {
-            onLoginFailed();
-            return;
-        }
-
-        _loginButton.setEnabled(false);
-
-        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
-                R.style.AppTheme_Dark_Dialog);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage(LoginActivity.this.getString(R.string.authenticating));
-
-        progressDialog.show();
-
-        final String email = _emailText.getText().toString();
-        final String password = _passwordText.getText().toString();
-
-        // TODO: Implement your own authentication logic here.
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
-
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-                        if (!task.isSuccessful()) {
-                            Log.w(TAG, "signInWithEmail:failed", task.getException());
                             Snackbar.make(getCurrentFocus(), R.string.auth_failed, Snackbar.LENGTH_SHORT).show();
-
                             onLoginFailed();
                             progressDialog.dismiss();
                             return;
@@ -214,34 +197,62 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 });
     }
 
+    public void login() {
+        Log.d(TAG, "Login");
+
+        if(googleLogin){
+            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+            startActivityForResult(signInIntent, RC_SIGN_IN);
+        }
+        else {
+            if (!validate()) {
+                onLoginFailed();
+                return;
+            }
+
+            _loginButton.setEnabled(false);
+
+            final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
+                    R.style.AppTheme_Dark_Dialog);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setMessage(LoginActivity.this.getString(R.string.authenticating));
+
+            progressDialog.show();
+
+            final String email = _emailText.getText().toString();
+            final String password = _passwordText.getText().toString();
+
+            // TODO: Implement your own authentication logic here.
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+
+                            // If sign in fails, display a message to the user. If sign in succeeds
+                            // the auth state listener will be notified and logic to handle the
+                            // signed in user can be handled in the listener.
+                            if (!task.isSuccessful()) {
+                                Log.w(TAG, "signInWithEmail:failed", task.getException());
+                                Snackbar.make(getCurrentFocus(), R.string.auth_failed, Snackbar.LENGTH_SHORT).show();
+
+                                onLoginFailed();
+                                progressDialog.dismiss();
+                                return;
+                            }
+                            onLoginSuccess();
+                            progressDialog.dismiss();
+                        }
+                    });
+        }
+    }
+
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            if (result.isSuccess()) {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = result.getSignInAccount();
-                firebaseAuthWithGoogle(account);
-            } else {
-                // Google Sign In failed
-                Log.e(TAG, "Google Sign In failed.");
-            }
-        } else if (requestCode == REQUEST_SIGNUP) {
-            if (resultCode == RESULT_OK) {
-
-                // TODO: Implement successful signup logic here
-                // By default we just finish the Activity and log them in automatically
-                this.finish();
-            }
-        }
     }
 
     @Override
@@ -263,14 +274,30 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     public void onLoginSuccess() {
-        _loginButton.setEnabled(true);
+        if(googleLogin) {
+            _googleImage.setEnabled(true);
+            googleLogin = false;
+        }
+        else {
+            _loginButton.setEnabled(true);
+            defaultLogin = false;
+        }
+        Log.d(TAG, "onLoginSuccess: Google: " + googleLogin + " Default: " + defaultLogin);
+
+        startActivity(new Intent(LoginActivity.this, MainActivity.class));
         finish();
+
     }
 
     public void onLoginFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
-
-        _loginButton.setEnabled(true);
+        if(googleLogin) {
+            _googleImage.setEnabled(true);
+            googleLogin = false;
+        }
+        else {
+            _loginButton.setEnabled(true);
+            defaultLogin = false;
+        }
     }
 
     public boolean validate() {
@@ -285,18 +312,26 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             _emailInput.setErrorEnabled(false);
         }
 
-        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            _passwordInput.setError("between 4 and 10 alphanumeric characters");
+        if (password.isEmpty() || password.length() < 5 || password.length() > 10) {
+            _passwordInput.setError("between 6 and 10 alphanumeric characters");
             valid = false;
         } else {
             _passwordInput.setErrorEnabled(false);
         }
-
         return valid;
     }
 
     @Override
-    public void onClick(View view) {
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 }

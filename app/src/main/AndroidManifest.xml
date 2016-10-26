@@ -17,5 +17,6 @@
         </activity>
         <activity android:name=".LoginActivity" android:theme="@style/AppTheme" />
         <activity android:name=".SignupActivity" android:theme="@style/AppTheme" />
+        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
     </application>
 </manifest>
