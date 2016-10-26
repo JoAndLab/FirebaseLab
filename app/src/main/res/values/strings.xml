@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">FirebaseLab</string>
 
+    // Drawer
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
     // Misc text
     <string name="hello">You are logged in!</string>
 
@@ -17,4 +22,7 @@
 
     // Tabbed layout
     <string name="section_format">Hello World from section: %1$d</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
