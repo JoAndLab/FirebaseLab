@@ -34,6 +34,7 @@ public class Ref {
     /* Key for avatar id */
     public static final String KEY_AVATAR_ID = "avatarId";
 
+
     /* User connection status */
     public static final String KEY_ONLINE = "online";
     public static final String KEY_OFFLINE = "offline";
