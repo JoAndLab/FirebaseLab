@@ -4,4 +4,10 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorRuler">#cdcdcd</color>
+    <color name="default_bubble_color_rcv">#cecece</color>
+    <color name="default_message_color_rcv">#000000</color>
+    <color name="default_tstamp_color_rcv">#707070</color>
+    <color name="default_bubble_color_send">#2c78ab</color>
+    <color name="default_message_color_send">#FFFFFF</color>
+    <color name="default_tstamp_color_send">#ababab</color>
 </resources>
