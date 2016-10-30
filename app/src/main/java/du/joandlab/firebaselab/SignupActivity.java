@@ -4,6 +4,7 @@ package du.joandlab.firebaselab;
  * Created by Anders Mellberg on 2016-10-24.
  */
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,28 +23,41 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
-    private String name;
-    private String address;
+    private String fullname;
     private String email;
-    private String mobile;
     private String password;
-    private FirebaseAuth mAuth;
+    private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private DatabaseReference mDatabase;
+    final DatabaseReference rootRefUser = FirebaseDatabase.getInstance().getReference(Ref.CHILD_USERS);
+    private String userUid;
 
 /*    @Bind(R.id.input_name) EditText _nameText;
     @Bind(R.id.input_address) EditText _addressText;
     @Bind(R.id.input_mobile) EditText _mobileText;*/
 
-    @Bind(R.id.input_email_layout) TextInputLayout _emailInput;
-    @Bind(R.id.input_password_layout) TextInputLayout _passwordInput;
-    @Bind(R.id.input_repassword_layout) TextInputLayout _passwordReInput;
+    @Bind(R.id.input_fullname_layout)
+    TextInputLayout _fullnameInput;
+    @Bind(R.id.input_email_layout)
+    TextInputLayout _emailInput;
+    @Bind(R.id.input_password_layout)
+    TextInputLayout _passwordInput;
+    @Bind(R.id.input_repassword_layout)
+    TextInputLayout _passwordReInput;
 
+    @Bind(R.id.input_fullname) EditText _fullnameText;
     @Bind(R.id.input_email) EditText _emailText;
     @Bind(R.id.input_password) EditText _passwordText;
     @Bind(R.id.input_reEnterPassword) EditText _reEnterPasswordText;
@@ -55,9 +69,10 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         ButterKnife.bind(this);
-        mAuth = FirebaseAuth.getInstance();
 
-       mAuthListener = new FirebaseAuth.AuthStateListener() {
+        mFirebaseAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -94,14 +109,14 @@ public class SignupActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+        mFirebaseAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
         if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
+            mFirebaseAuth.removeAuthStateListener(mAuthListener);
         }
     }
 
@@ -130,7 +145,7 @@ public class SignupActivity extends AppCompatActivity {
 
         // TODO: Implement your own signup logic here.
 
-        mAuth.createUserWithEmailAndPassword(email, password)
+        mFirebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -152,11 +167,31 @@ public class SignupActivity extends AppCompatActivity {
                 });
     }
 
+    private String getDate(){
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+        dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+        String registerDateandTime = dateFormatGmt.format(new Date());
+        return registerDateandTime;
+    }
+
+    private void saveUser(){
+        // Save user to database
+        if(mFirebaseAuth != null) {
+            mFirebaseAuth = FirebaseAuth.getInstance();
+            userUid = mFirebaseAuth.getCurrentUser().getUid();
+            User user = new User(fullname, email, getDate());
+            rootRefUser.child(userUid).setValue(user);
+        }
+    }
+
     public void onSignupSuccess() {
+        saveUser();
         _signupButton.setEnabled(true);
         setResult(RESULT_OK, null);
+
         if(getCurrentFocus() != null)
             Snackbar.make(getCurrentFocus(), R.string.register_success, Snackbar.LENGTH_SHORT).show();
+        startActivity(new Intent(SignupActivity.this, MainActivity.class));
         finish();
     }
 
@@ -173,7 +208,8 @@ public class SignupActivity extends AppCompatActivity {
         /* String name = _nameText.getText().toString();
         String address = _addressText.getText().toString();
         String mobile = _mobileText.getText().toString();*/
-        String email = _emailText.getText().toString();
+        fullname = _fullnameText.getText().toString();
+        email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
         String reEnterPassword = _reEnterPasswordText.getText().toString();
 
@@ -191,6 +227,12 @@ public class SignupActivity extends AppCompatActivity {
             _addressText.setError(null);
         }
 */
+        if (fullname.isEmpty() || fullname.length() < 3) {
+            _fullnameText.setError("at least 3 characters");
+            valid = false;
+        } else {
+            _fullnameInput.setErrorEnabled(false);
+        }
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             _emailInput.setError("enter a valid email address");
@@ -236,6 +278,8 @@ public class SignupActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
     // TODO Auto-generated method stub
+        //User user = new User(false);
+
         super.onDestroy();
     }
 }

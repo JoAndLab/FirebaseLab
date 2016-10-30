@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -17,11 +18,21 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
@@ -39,11 +50,29 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseUser mFirebaseUser;
     private FirebaseAuth mFirebaseAuth;
+    final DatabaseReference rootRefUser = FirebaseDatabase.getInstance().getReference(Ref.CHILD_USERS);
+    private String userUid;
+
     private String mUsername;
     private String mPhotoUrl;
 
+    private TextView fullName;
+    private TextView textEmail;
+
+    private SharedPreferences sharedPrefs;
+    private Boolean _settingsTheme;
+    private String _settingsChangePassword;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Get default sharedpreferences
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        // Register listner on changes made to settings
+        sharedPrefs.registerOnSharedPreferenceChangeListener(this);
+
+        // Change theme
+        loadTheme();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -70,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
         // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        if(mFirebaseUser != null)
+            userUid = mFirebaseUser.getUid();
 
         if (mFirebaseUser == null) {
             // Not signed in, launch the Sign In activity
@@ -77,11 +108,17 @@ public class MainActivity extends AppCompatActivity {
             finish();
             return;
         } else {
+            rootRefUser.child(userUid).child(Ref.CHILD_CONNECTION).setValue(true);
             mUsername = mFirebaseUser.getDisplayName();
             if (mFirebaseUser.getPhotoUrl() != null) {
                 mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
             }
         }
+    }
+    public void loadTheme() {
+        // Change theme (default light)
+        _settingsTheme = sharedPrefs.getBoolean("change_theme", false);
+        setTheme(_settingsTheme ? R.style.AppThemeDark : R.style.AppTheme );
     }
 
     private ActionBarDrawerToggle setupDrawerToggle() {
@@ -130,11 +167,16 @@ public class MainActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        switch (id){
+        switch (item.getItemId()){
+            case R.id.action_settings:
+                Intent i = new Intent(this, SettingsActivity.class);
+                startActivity(i);
+                break;
+
             case R.id.action_logout:
+                rootRefUser.child(userUid).child(Ref.CHILD_CONNECTION).setValue(false);
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
                 startActivity(intent);
@@ -214,4 +256,68 @@ public class MainActivity extends AppCompatActivity {
         menu.getItem(mCurrentSelectedPosition).setChecked(true);
     }
 
+    public void setUserData(){
+
+        rootRefUser.child(userUid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+                View v = navigationView.getHeaderView(0);
+                fullName = (TextView)v.findViewById(R.id.user_name);
+                textEmail = (TextView)v.findViewById(R.id.user_email);
+                if(mFirebaseUser.getProviders().contains("google.com")) {
+                    fullName.setText(mFirebaseUser.getDisplayName());
+                    textEmail.setText(mFirebaseUser.getEmail());
+                } else {
+                    fullName.setText(user.getName());
+                    textEmail.setText(user.getEmail());
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        setUserData();
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if(mFirebaseUser != null) {
+            rootRefUser.child(userUid).child(Ref.CHILD_CONNECTION).setValue(false);
+        }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals("change_theme")) {
+            recreate();
+        }
+        else if (key.equals("setting_change_password")) {
+            _settingsChangePassword = sharedPrefs.getString("setting_change_password", "");
+            changePassword(_settingsChangePassword);
+        }
+    }
+
+    private void changePassword(String newPassword){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        user.updatePassword(newPassword)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(MainActivity.this, "User password changed!", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "User password changed.");
+                        }
+                    }
+                });
+    }
 }

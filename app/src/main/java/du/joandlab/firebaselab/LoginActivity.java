@@ -44,13 +44,17 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private static final int REQUEST_SIGNUP = 0;
     private static final int RC_SIGN_IN = 9001;
     private GoogleApiClient mGoogleApiClient;
-    private FirebaseAuth mAuth;
+    private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private boolean googleLogin = false;
     private boolean defaultLogin = false;
 
-    @Bind(R.id.input_email_layout) TextInputLayout _emailInput;
-    @Bind(R.id.input_password_layout) TextInputLayout _passwordInput;
+    private String mUid;
+
+    @Bind(R.id.input_email_layout)
+    TextInputLayout _emailInput;
+    @Bind(R.id.input_password_layout)
+    TextInputLayout _passwordInput;
     @Bind(R.id.input_email) EditText _emailText;
     @Bind(R.id.input_password) EditText _passwordText;
     @Bind(R.id.btn_login) Button _loginButton;
@@ -75,13 +79,13 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 .build();
 
         // FireBase
-        mAuth = FirebaseAuth.getInstance();
+        mFirebaseAuth = FirebaseAuth.getInstance();
+
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                 } else {
                     // User is signed out
@@ -175,7 +179,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         progressDialog.show();
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mAuth.signInWithCredential(credential)
+        mFirebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -223,7 +227,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             final String password = _passwordText.getText().toString();
 
             // TODO: Implement your own authentication logic here.
-            mAuth.signInWithEmailAndPassword(email, password)
+            mFirebaseAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -273,6 +277,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 }).setNegativeButton("no, stay here", null).show();
     }
 
+
     public void onLoginSuccess() {
         if(googleLogin) {
             _googleImage.setEnabled(true);
@@ -282,7 +287,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             _loginButton.setEnabled(true);
             defaultLogin = false;
         }
-        Log.d(TAG, "onLoginSuccess: Google: " + googleLogin + " Default: " + defaultLogin);
 
         startActivity(new Intent(LoginActivity.this, MainActivity.class));
         finish();
@@ -324,14 +328,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Override
     public void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+        mFirebaseAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
         if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
+            mFirebaseAuth.removeAuthStateListener(mAuthListener);
         }
     }
 }
