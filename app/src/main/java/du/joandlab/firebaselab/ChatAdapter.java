@@ -20,10 +20,10 @@ class ChatAdapter extends FirebaseRecyclerAdapter<ChatObject, ChatHolder> {
     private static final int SENDER = 0;
     private static final int RECIPIENT = 1;
 
-    public ChatAdapter(Class<ChatObject> modelClass, int modelLayout, Class<ChatHolder> viewHolderClass, DatabaseReference ref) {
+    public ChatAdapter(Class<ChatObject> modelClass, int modelLayout, Class<ChatHolder> viewHolderClass, DatabaseReference ref, List<ChatObject> mListOfChat) {
         super(modelClass, modelLayout, viewHolderClass, ref);
+        this.mListOfChat = mListOfChat;
     }
-
 
     @Override
     public int getItemViewType(int position) {

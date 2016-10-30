@@ -38,6 +38,5 @@ public class Ref {
     /* User connection status */
     public static final String KEY_ONLINE = "online";
     public static final String KEY_OFFLINE = "offline";
-    public static final String CHILD_CONNECTION = "online";
 
 }

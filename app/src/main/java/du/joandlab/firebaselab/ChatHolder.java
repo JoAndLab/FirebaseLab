@@ -12,12 +12,14 @@ public class ChatHolder extends RecyclerView.ViewHolder {
 
     private TextView mSenderMessageTextView;
     private TextView mRecipientMessageTextView;
+    private TextView mSenderTimeStamp;
+    private TextView mRecipientTimeStamp;
 
     public ChatHolder(View itemView) {
         super(itemView);
 
-        mSenderMessageTextView = (TextView) itemView.findViewById(R.id.senderMessage);
-        mRecipientMessageTextView = (TextView) itemView.findViewById(R.id.recipientMessage);
+        mSenderMessageTextView = (TextView) itemView.findViewById(R.id.message_text_view_sent);
+        mRecipientMessageTextView = (TextView) itemView.findViewById(R.id.message_text_view_rcv);
 
     }
 
@@ -35,5 +37,21 @@ public class ChatHolder extends RecyclerView.ViewHolder {
 
     public void setmRecipientMessageTextView(TextView mRecipientMessageTextView) {
         this.mRecipientMessageTextView = mRecipientMessageTextView;
+    }
+
+    public TextView getmSenderTimeStamp() {
+        return mSenderTimeStamp;
+    }
+
+    public void setmSenderTimeStamp(TextView mSenderTimeStamp) {
+        this.mSenderTimeStamp = mSenderTimeStamp;
+    }
+
+    public TextView getmRecipientTimeStamp() {
+        return mRecipientTimeStamp;
+    }
+
+    public void setmRecipientTimeStamp(TextView mRecipientTimeStamp) {
+        this.mRecipientTimeStamp = mRecipientTimeStamp;
     }
 }
