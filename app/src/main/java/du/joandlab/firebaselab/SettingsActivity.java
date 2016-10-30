@@ -4,6 +4,7 @@ package du.joandlab.firebaselab;
  * Created by Anders Mellberg on 2016-10-27.
  */
 
+
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;

@@ -6,6 +6,7 @@ import com.google.firebase.database.IgnoreExtraProperties;
  * Created by Anders Mellberg on 2016-10-26.
  */
 
+
 @IgnoreExtraProperties
 public class User {
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:key="pref_screen">
+    <PreferenceCategory
+        android:title="Change theme">
+    <SwitchPreference
+        android:id="@+id/setting_change_theme"
+        android:defaultValue="false"
+        android:key="change_theme"
+        android:title="Theme"
+        android:summary="Change theme to light/dark"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="User settings"
+        android:key="user_settings">
+
+    <EditTextPreference
+        android:id="@+id/setting_change_password"
+        android:title="Change password"
+        android:key="setting_change_password"
+        android:summary="Change current password"
+        android:inputType="textPassword"
+        />
+    </PreferenceCategory>
+</PreferenceScreen>
