@@ -158,7 +158,7 @@ public class ProfileFragment extends Fragment {
         rootRefUser.child(userUid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-               User user = dataSnapshot.getValue(User.class);
+                UserObject user = dataSnapshot.getValue(UserObject.class);
                 if(mFirebaseUser.getProviders().contains("google.com")) {
                     rootRefUser.child(userUid).child("name").setValue(mFirebaseUser.getDisplayName());
                     rootRefUser.child(userUid).child("email").setValue(mFirebaseUser.getEmail());

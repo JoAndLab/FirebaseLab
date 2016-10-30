@@ -179,7 +179,7 @@ public class SignupActivity extends AppCompatActivity {
         if(mFirebaseAuth != null) {
             mFirebaseAuth = FirebaseAuth.getInstance();
             userUid = mFirebaseAuth.getCurrentUser().getUid();
-            User user = new User(fullname, email, getDate());
+            UserObject user = new UserObject(fullname, email, getDate());
             rootRefUser.child(userUid).setValue(user);
         }
     }

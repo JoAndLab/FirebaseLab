@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             finish();
             return;
         } else {
-            rootRefUser.child(userUid).child(Ref.CHILD_CONNECTION).setValue(true);
+            rootRefUser.child(userUid).child(Ref.CHILD_CONNECTION).setValue("online");
             mUsername = mFirebaseUser.getDisplayName();
             if (mFirebaseUser.getPhotoUrl() != null) {
                 mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 break;
 
             case R.id.action_logout:
-                rootRefUser.child(userUid).child(Ref.CHILD_CONNECTION).setValue(false);
+                rootRefUser.child(userUid).child(Ref.CHILD_CONNECTION).setValue("offline");
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
                 startActivity(intent);
@@ -261,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         rootRefUser.child(userUid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
+                UserObject user = dataSnapshot.getValue(UserObject.class);
                 NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
                 View v = navigationView.getHeaderView(0);
                 fullName = (TextView)v.findViewById(R.id.user_name);
@@ -291,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     public void onDestroy(){
         super.onDestroy();
         if(mFirebaseUser != null) {
-            rootRefUser.child(userUid).child(Ref.CHILD_CONNECTION).setValue(false);
+            rootRefUser.child(userUid).child(Ref.CHILD_CONNECTION).setValue("offline");
         }
     }
 

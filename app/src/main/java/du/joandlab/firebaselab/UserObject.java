@@ -11,9 +11,13 @@ import android.os.Parcelable;
 class UserObject implements Parcelable {
 
     private String username;
+    private String name;
     private String connection;
     private String email;
+    private String address;
+    private String phone;
     private String registerdate;
+    private String updatedate;
     private int avatarId;
 
     private String recipientUid;
@@ -24,6 +28,12 @@ class UserObject implements Parcelable {
     private String mCurrentUserEmail;
     private String mCurrentUserCreatedAt;
 
+    public UserObject(String name, String email, String registerdate) {
+        this.name = name;
+        this.email = email;
+        this.registerdate = registerdate;
+    }
+
 
     public UserObject() {
 
@@ -32,9 +42,13 @@ class UserObject implements Parcelable {
     private UserObject(Parcel pIN) {
 
         username = pIN.readString();
+        name = pIN.readString();
         connection = pIN.readString();
         email = pIN.readString();
+        address = pIN.readString();
+        phone = pIN.readString();
         registerdate = pIN.readString();
+        updatedate = pIN.readString();
         avatarId = pIN.readInt();
         recipientUid = pIN.readString();
         mCurrentUserName = pIN.readString();
@@ -135,6 +149,38 @@ class UserObject implements Parcelable {
         this.avatarId = avatarId;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getUpdatedate() {
+        return updatedate;
+    }
+
+    public void setUpdatedate(String updatedate) {
+        this.updatedate = updatedate;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -143,9 +189,13 @@ class UserObject implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(username);
+        parcel.writeString(name);
         parcel.writeString(connection);
         parcel.writeString(email);
+        parcel.writeString(address);
+        parcel.writeString(phone);
         parcel.writeString(registerdate);
+        parcel.writeString(updatedate);
         parcel.writeInt(avatarId);
         parcel.writeString(recipientUid);
         parcel.writeString(mCurrentUserName);
@@ -154,7 +204,7 @@ class UserObject implements Parcelable {
         parcel.writeString(mCurrentUserCreatedAt);
     }
 
-    /*create chat endpoint for firebase*/
+    /*create chat endpoint for firebase*//*
     public String getChatRef() {
         return createUniqueChatRef();
     }
@@ -172,5 +222,5 @@ class UserObject implements Parcelable {
         //replace dot with underscore since firebase does not allow dot as key
         return email.replace(".", "_");
 
-    }
+    }*/
 }
