@@ -39,6 +39,7 @@ public class ChatFragment extends Fragment {
     private TextView mChatTimeStamp;
     private ChatAdapter mChatAdapter;
 
+
     /* Sender and Recipient status*/
     private static final int SENDER_STATUS = 0;
     private static final int RECIPIENT_STATUS = 1;
