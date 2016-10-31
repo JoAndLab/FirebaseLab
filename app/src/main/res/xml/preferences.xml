@@ -14,12 +14,17 @@
         android:title="User settings"
         android:key="user_settings">
 
+        <Preference
+            android:id="@+id/setting_change_avatar"
+            android:title="Generate Avatar"
+            android:key="setting_change_avatar"
+            android:summary="Click to generate new Avatar" />
+
     <EditTextPreference
         android:id="@+id/setting_change_password"
         android:title="Change password"
         android:key="setting_change_password"
         android:summary="Change current password"
-        android:inputType="textPassword"
-        />
+        android:inputType="textPassword" />
     </PreferenceCategory>
 </PreferenceScreen>

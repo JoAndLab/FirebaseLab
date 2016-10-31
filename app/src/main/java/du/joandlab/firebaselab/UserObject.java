@@ -28,10 +28,11 @@ class UserObject implements Parcelable {
     private String mCurrentUserEmail;
     private String mCurrentUserCreatedAt;
 
-    public UserObject(String name, String email, String registerdate) {
+    public UserObject(String name, String email, int avatarId, String registerdate) {
         this.name = name;
         this.email = email;
         this.registerdate = registerdate;
+        this.avatarId = avatarId;
     }
 
 

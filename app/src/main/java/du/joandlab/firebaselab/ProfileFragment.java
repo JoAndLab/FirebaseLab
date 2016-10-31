@@ -23,6 +23,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
 
@@ -42,6 +44,7 @@ public class ProfileFragment extends Fragment {
     private TextView registerDate;
     private TextView updateDate;
     private String profileUpdate;
+    private CircleImageView profileImage;
 
 
     private FirebaseUser mFirebaseUser;
@@ -67,6 +70,7 @@ public class ProfileFragment extends Fragment {
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         userUid = mFirebaseUser.getUid();
 
+        profileImage = (CircleImageView) getActivity().findViewById(R.id.profile_image);
         fullName = (TextView) getActivity().findViewById(R.id.user_name);
         userName = (TextView) getActivity().findViewById(R.id.user_nick);
         userEmail = (TextView) getActivity().findViewById(R.id.user_email);
@@ -162,6 +166,10 @@ public class ProfileFragment extends Fragment {
                 if(mFirebaseUser.getProviders().contains("google.com")) {
                     rootRefUser.child(userUid).child("name").setValue(mFirebaseUser.getDisplayName());
                     rootRefUser.child(userUid).child("email").setValue(mFirebaseUser.getEmail());
+                    profileImage.setImageResource(R.drawable.google_login);
+                }
+                else {
+                    profileImage.setImageResource(AvatarPicker.getDrawableAvatarId(user.getAvatarId()));
                 }
                 fullName.setText(user.getName());
                 userName.setText(user.getUsername());
