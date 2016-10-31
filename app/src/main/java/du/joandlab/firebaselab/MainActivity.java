@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 mCurrentSelectedPosition = 0;
                 break;
             case R.id.navigation_item_chat:
-                fragmentClass = UsersFragment.class;
+                fragmentClass = ChatFragment.class;
                 mCurrentSelectedPosition = 1;
                 break;
             case R.id.navigation_item_about:

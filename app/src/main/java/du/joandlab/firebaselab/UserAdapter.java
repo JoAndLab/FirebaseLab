@@ -24,16 +24,14 @@ class UserAdapter extends FirebaseRecyclerAdapter<UserObject, UserHolder> {
     private List<UserObject> mChatUsers;
     private Context context;
 
-    /*UserAdapter(Class<UserObject> modelClass, int modelLayout, Class<UserHolder> viewHolderClass,
-                DatabaseReference ref, Context context) {
-        super(modelClass, modelLayout, viewHolderClass, ref);
-        this.context = context;
-    }*/
-
     UserAdapter(Class<UserObject> modelClass, int modelLayout, Class<UserHolder> viewHolderClass, DatabaseReference ref, List<UserObject> mChatUsers, Context context) {
         super(modelClass, modelLayout, viewHolderClass, ref);
         this.mChatUsers = mChatUsers;
         this.context = context;
+    }
+
+    public List<UserObject> getmChatUsers() {
+        return mChatUsers;
     }
 
     @Override
@@ -61,6 +59,7 @@ class UserAdapter extends FirebaseRecyclerAdapter<UserObject, UserHolder> {
         viewHolder.getVh_userName().setText(userObject.getUsername());
         viewHolder.getVh_connection().setText(userObject.getConnection());
 
+
         if (Objects.equals(userObject.getConnection(), Ref.KEY_ONLINE))
             viewHolder.getVh_connection().setTextColor(Color.parseColor("#00FF00"));
         else
@@ -87,6 +86,9 @@ class UserAdapter extends FirebaseRecyclerAdapter<UserObject, UserHolder> {
         mChatUsers.set(index, user);
         notifyDataSetChanged();
     }
+
 }
+
+
 
 

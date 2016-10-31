@@ -14,7 +14,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 class UserHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    private static final String TAG = UserHolder.class.getSimpleName();
+    private final String TAG = UserHolder.class.getSimpleName();
 
     private TextView vh_userName;
     private TextView vh_connection;
@@ -50,8 +50,10 @@ class UserHolder extends RecyclerView.ViewHolder implements View.OnClickListener
 
         Log.d(TAG, "onClick: ");
 
+        int position = getLayoutPosition();
+
         UsersFragment usersFragment = new UsersFragment();
-        usersFragment.startNewChat();
+        usersFragment.startNewChat(position);
 
     }
 }

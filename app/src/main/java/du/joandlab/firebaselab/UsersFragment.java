@@ -49,7 +49,11 @@ public class UsersFragment extends Fragment {
     private String mCurrentUserEmail;
 
     /* List holding user key */
-    private List<String> mUsersKeyList;
+    private static List<String> mUsersKeyList;
+
+    private List<UserObject> userObjectList;
+
+    int mPosition;
 
     public UsersFragment() {
         // Required empty public constructor
@@ -66,7 +70,7 @@ public class UsersFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         mProgressBarForUsers = view.findViewById(R.id.progress_bar_users);
         // Initialize adapter
-        List<UserObject> userObjectList = new ArrayList<>();
+        userObjectList = new ArrayList<>();
         mUsersKeyList = new ArrayList<>();
         mUserAdapter = new UserAdapter(UserObject.class, R.layout.user_item, UserHolder.class, userRef, userObjectList, getContext());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -223,10 +227,15 @@ public class UsersFragment extends Fragment {
         }
     }
 
+    public void startNewChat(int position) {
+        this.mPosition = position;
+        Log.d(TAG, "startNewChat: " + position);
 
-    public void startNewChat() {
+        String test = mUsersKeyList.get(position);
 
-        Log.d(TAG, "startNewChat: ");
+        Log.d(TAG, "startNewChat: " + test);
+
 
     }
+
 }

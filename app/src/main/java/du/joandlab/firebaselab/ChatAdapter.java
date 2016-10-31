@@ -91,4 +91,26 @@ class ChatAdapter extends FirebaseRecyclerAdapter<ChatObject, ChatHolder> {
     public int getItemCount() {
         return mListOfChat.size();
     }
+
+    public void refillAdapter(ChatObject newChatMessage) {
+
+        /*add new message chat to list*/
+        mListOfChat.add(newChatMessage);
+
+        /*refresh view*/
+        notifyItemInserted(getItemCount() - 1);
+    }
+
+    public void refillFirsTimeAdapter(List<ChatObject> newChatMessage) {
+
+        /*add new message chat to list*/
+        mListOfChat.clear();
+        mListOfChat.addAll(newChatMessage);
+        /*refresh view*/
+        notifyItemInserted(getItemCount() - 1);
+    }
+
+    public void cleanUp() {
+        mListOfChat.clear();
+    }
 }

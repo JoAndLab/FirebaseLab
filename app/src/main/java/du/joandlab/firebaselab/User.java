@@ -57,7 +57,7 @@ public class User {
         return registerdate;
     }
 
-    public String getUpdatedate(){
+    public String getUpdated(){
         return updatedate;
     }
 }*/
