@@ -32,6 +32,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private DrawerLayout mDrawer;
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     private TextView fullName;
     private TextView textEmail;
+    private CircleImageView profileImage;
 
     private SharedPreferences sharedPrefs;
     private Boolean _settingsTheme;
@@ -264,12 +267,14 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 UserObject user = dataSnapshot.getValue(UserObject.class);
                 NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
                 View v = navigationView.getHeaderView(0);
+                profileImage = (CircleImageView)v.findViewById(R.id.profile_image);
                 fullName = (TextView)v.findViewById(R.id.user_name);
                 textEmail = (TextView)v.findViewById(R.id.user_email);
                 if(mFirebaseUser.getProviders().contains("google.com")) {
                     fullName.setText(mFirebaseUser.getDisplayName());
                     textEmail.setText(mFirebaseUser.getEmail());
                 } else {
+                    profileImage.setImageResource(AvatarPicker.getDrawableAvatarId(user.getAvatarId()));
                     fullName.setText(user.getName());
                     textEmail.setText(user.getEmail());
                 }
