@@ -94,6 +94,11 @@ public class ChatFragment extends Fragment {
         mChatRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mChatRecyclerView.setHasFixedSize(true);
 
+        // Set chat layout to recycleview - messages start at bottom
+        LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        manager.setStackFromEnd(true);
+        mChatRecyclerView.setLayoutManager(manager);
+
         // Initialize adapter
         List<ChatObject> emptyMessageChat = new ArrayList<>();
         mChatAdapter = new ChatAdapter(emptyMessageChat);
@@ -146,7 +151,6 @@ public class ChatFragment extends Fragment {
             editChatText.setText("");
 
         }
-
     }
 
     @Override

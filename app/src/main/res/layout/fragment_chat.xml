@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,14 +10,16 @@
         android:id="@+id/chat_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/divider" />
+        android:layout_above="@+id/divider"
+        app:layoutManager="LinearLayoutManager"
+        app:stackFromEnd="true" />
 
     <View
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_gravity="bottom"
-        android:layout_above="@+id/senderContainer" />
+        android:layout_above="@+id/senderContainer"
+        android:layout_gravity="bottom" />
 
     <RelativeLayout
         android:id="@+id/senderContainer"
@@ -30,31 +33,31 @@
 
         <EditText
             android:id="@+id/chat_user_message"
-            android:layout_marginStart="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#555555"
-            android:textSize="14sp"
-            android:hint="Type your message"
+            android:layout_marginStart="5dp"
+            android:layout_toStartOf="@+id/sendUserMessage"
             android:gravity="top"
-            android:layout_toStartOf="@+id/sendUserMessage" />
+            android:hint="Type your message"
+            android:textColor="#555555"
+            android:textSize="14sp" />
 
         <Button
             android:id="@+id/sendUserMessage"
-            android:layout_marginEnd="10dp"
-            android:textColor="#FFFFFF"
             android:layout_width="72dp"
             android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
             android:text="Send"
-            android:layout_alignParentEnd="true" />
+            android:textColor="#FFFFFF" />
     </RelativeLayout>
 
     <ProgressBar
         android:id="@+id/progress_for_chat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:visibility="gone" />
 
 </RelativeLayout>
