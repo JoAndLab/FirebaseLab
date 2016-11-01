@@ -75,11 +75,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private void configureSenderView(ChatHolderSender chatHolderSender, int position) {
         ChatObject senderFireMessage = mChatList.get(position);
         chatHolderSender.getmSenderMessageTextView().setText(senderFireMessage.getMessage());
+        chatHolderSender.getmSenderTimeStamp().setText(senderFireMessage.getTimeStamp());
     }
 
     private void configureRecipientView(ChatHolderRecipient chatHolderRecipient, int position) {
         ChatObject recipientFireMessage = mChatList.get(position);
         chatHolderRecipient.getmRecipientMessageTextView().setText(recipientFireMessage.getMessage());
+        chatHolderRecipient.getmRecipientTimeStamp().setText(recipientFireMessage.getTimeStamp());
     }
 
     @Override

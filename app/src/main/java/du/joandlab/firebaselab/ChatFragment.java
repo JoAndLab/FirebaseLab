@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -20,9 +21,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -51,6 +55,8 @@ public class ChatFragment extends Fragment {
     /* Sender uid */
     private String mSenderUid;
 
+    private String mTimeStamp;
+
     /* unique Firebase ref for this chat */
     private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
     private DatabaseReference messageRef;
@@ -71,6 +77,7 @@ public class ChatFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         // Set recipient uid
         mRecipientUid = userObject.getRecipientUid();
@@ -118,6 +125,8 @@ public class ChatFragment extends Fragment {
     private void sendMessageToChat() {
 
         String senderMessage = editChatText.getText().toString();
+        SimpleDateFormat time = new SimpleDateFormat("hh:mm", Locale.getDefault());
+        mTimeStamp = time.format(new Date());
         senderMessage = senderMessage.trim();
 
         if (!senderMessage.isEmpty()) {
@@ -129,6 +138,7 @@ public class ChatFragment extends Fragment {
             newMessage.put("sender", mSenderUid); // Sender uid
             newMessage.put("recipient", mRecipientUid); // Recipient uid
             newMessage.put("message", senderMessage); // Message
+            newMessage.put("timeStamp", mTimeStamp); // TimeStamp
 
             messageRef.push().setValue(newMessage);
 
