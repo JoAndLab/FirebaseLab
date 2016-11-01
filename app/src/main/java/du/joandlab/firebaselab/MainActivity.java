@@ -34,7 +34,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener, NewChatInterface {
 
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     private FirebaseUser mFirebaseUser;
     private FirebaseAuth mFirebaseAuth;
+    private UserObject mUser;
     final DatabaseReference rootRefUser = FirebaseDatabase.getInstance().getReference(Ref.CHILD_USERS);
     private String userUid;
 
@@ -99,12 +100,14 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         // Setup drawer view
         setupDrawerContent(nvDrawer);
 
+        mUser = new UserObject();
+
         // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
-        if(mFirebaseUser != null)
+        if (mFirebaseUser != null) {
             userUid = mFirebaseUser.getUid();
-
+        }
         if (mFirebaseUser == null) {
             // Not signed in, launch the Sign In activity
             startActivity(new Intent(this, LoginActivity.class));
@@ -200,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 mCurrentSelectedPosition = 0;
                 break;
             case R.id.navigation_item_chat:
-                fragmentClass = ChatFragment.class;
+                fragmentClass = UsersFragment.class;
                 mCurrentSelectedPosition = 1;
                 break;
             case R.id.navigation_item_about:
@@ -324,5 +327,19 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                         }
                     }
                 });
+    }
+
+    @Override
+    public void userToNewChat(UserObject userObject) {
+
+        ChatFragment chatFragment = new ChatFragment();
+        chatFragment.getUserData(userObject);
+
+        FragmentManager manager = getSupportFragmentManager();
+        manager.beginTransaction()
+                .replace(R.id.frame_container, chatFragment)
+                .commit();
+
+
     }
 }

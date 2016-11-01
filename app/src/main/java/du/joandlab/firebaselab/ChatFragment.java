@@ -4,6 +4,7 @@ package du.joandlab.firebaselab;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -70,14 +71,25 @@ public class ChatFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
+        // Set recipient uid
+        mRecipientUid = userObject.getRecipientUid();
+
+        // Set sender uid;
+        mSenderUid = userObject.getmCurrentUserUid();
+
 
         // Reference to recyclerView and text view
         mChatRecyclerView = (RecyclerView) view.findViewById(R.id.chat_recycler_view);
         editChatText = (EditText) view.findViewById(R.id.chat_user_message);
 
+        // Set recyclerView and adapter
+        mChatRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mChatRecyclerView.setHasFixedSize(true);
+
         // Initialize adapter
         List<ChatObject> emptyMessageChat = new ArrayList<>();
-        mChatAdapter = new ChatAdapter(ChatObject.class, R.layout.fragment_chat, ChatHolder.class, chatRef, emptyMessageChat);
+        mChatAdapter = new ChatAdapter(emptyMessageChat);
+
         mChatRecyclerView.setAdapter(mChatAdapter);
 
 
@@ -91,6 +103,12 @@ public class ChatFragment extends Fragment {
 
 
         return view;
+    }
+
+    public void getUserData(UserObject userObject) {
+
+        this.userObject = userObject;
+
     }
 
     private void sendMessageToChat() {

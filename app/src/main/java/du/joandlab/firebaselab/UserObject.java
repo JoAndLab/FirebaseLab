@@ -205,23 +205,36 @@ class UserObject implements Parcelable {
         parcel.writeString(mCurrentUserCreatedAt);
     }
 
-    // create chat endpoint for firebase
+    /*create chat endpoint for firebase*/
     public String getChatRef() {
         return createUniqueChatRef();
     }
 
     private String createUniqueChatRef() {
-        String uniqueChatRef;
+        String uniqueChatRef = "";
+        if (createdAtCurrentUser() > createdAtRecipient()) {
+            uniqueChatRef = cleanEmailAddress(getmCurrentUserEmail()) + "-" + cleanEmailAddress(getEmail());
+        } else {
 
-        uniqueChatRef = cleanEmailAddress(getmCurrentUserEmail()) + "-" + cleanEmailAddress(getEmail());
-
+            uniqueChatRef = cleanEmailAddress(getEmail()) + "-" + cleanEmailAddress(getmCurrentUserEmail());
+        }
         return uniqueChatRef;
+    }
+
+    private long createdAtCurrentUser() {
+        return Long.parseLong(getmCurrentUserCreatedAt());
+    }
+
+    private long createdAtRecipient() {
+        return Long.parseLong(getRegisterdate());
     }
 
     private String cleanEmailAddress(String email) {
 
-        //replace dot with underscore since firebase does not allow dot as key
+        //replace dot with comma since firebase does not allow dot
         return email.replace(".", "_");
 
     }
+
+
 }

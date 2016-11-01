@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,6 +35,9 @@ public class UsersFragment extends Fragment {
     private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
     private DatabaseReference userRef = FirebaseDatabase.getInstance().getReference(Ref.CHILD_USERS);
     private DatabaseReference connectionRef = FirebaseDatabase.getInstance().getReference(Ref.CHILD_CONNECTION);
+
+    private FirebaseUser mFirebaseUser;
+    private FirebaseAuth mFirebaseAuth;
     /* progress bar */
     private View mProgressBarForUsers;
 
@@ -43,17 +48,16 @@ public class UsersFragment extends Fragment {
     private ValueEventListener mConnectedListener;
 
     /* current user uid */
-    private String mCurrentUserUid = "11";
+    private String mCurrentUserUid;
 
     /* current user email */
     private String mCurrentUserEmail;
 
     /* List holding user key */
-    private static List<String> mUsersKeyList;
+    private List<String> mUsersKeyList;
 
     private List<UserObject> userObjectList;
 
-    int mPosition;
 
     public UsersFragment() {
         // Required empty public constructor
@@ -68,11 +72,13 @@ public class UsersFragment extends Fragment {
         getActivity().setTitle(getString(R.string.userList));
         recyclerView = (RecyclerView) view.findViewById(R.id.usersRecyclerView);
         recyclerView.setHasFixedSize(true);
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
         mProgressBarForUsers = view.findViewById(R.id.progress_bar_users);
         // Initialize adapter
         userObjectList = new ArrayList<>();
         mUsersKeyList = new ArrayList<>();
-        mUserAdapter = new UserAdapter(UserObject.class, R.layout.user_item, UserHolder.class, userRef, userObjectList, getContext());
+        mUserAdapter = new UserAdapter(getContext(), userObjectList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(mUserAdapter);
         return view;
@@ -81,6 +87,10 @@ public class UsersFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        if (mFirebaseUser != null) {
+            mCurrentUserUid = mFirebaseUser.getUid();
+        }
 
         queryChatUsers();
 
@@ -119,9 +129,9 @@ public class UsersFragment extends Fragment {
 
                     } else {
                         UserObject currentUser = dataSnapshot.getValue(UserObject.class);
-                        /*String username = currentUser.getFirstName(); //Get current user first name
-                        String createdAt = currentUser.getCreatedAt(); //Get current user date creation
-                        mUsersChatAdapter.setNameAndCreatedAt(userName, createdAt); //Add it the adapter*/
+                        String username = currentUser.getUsername(); //Get current user first name
+                        String registerdate = currentUser.getRegisterdate(); //Get current user date creation
+                        mUserAdapter.setNameAndCreatedAt(username, registerdate); //Add it the adapter*/
                     }
                 }
 
@@ -225,17 +235,6 @@ public class UsersFragment extends Fragment {
         if (mConnectedListener != null) {
             connectionRef.removeEventListener(mConnectedListener);
         }
-    }
-
-    public void startNewChat(int position) {
-        this.mPosition = position;
-        Log.d(TAG, "startNewChat: " + position);
-
-        String test = mUsersKeyList.get(position);
-
-        Log.d(TAG, "startNewChat: " + test);
-
-
     }
 
 }

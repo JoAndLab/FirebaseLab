@@ -1,33 +1,31 @@
 package du.joandlab.firebaselab;
 
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.database.DatabaseReference;
+import android.widget.TextView;
 
 import java.util.List;
 
 /**
- * Created by gson73 on 2016-10-28.
+ * Created by jogus on 2016-10-31.
  */
 
-class ChatAdapter extends FirebaseRecyclerAdapter<ChatObject, ChatHolder> {
+public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<ChatObject> mListOfChat;
+    private List<ChatObject> mChatList;
     private static final int SENDER = 0;
     private static final int RECIPIENT = 1;
 
-    public ChatAdapter(Class<ChatObject> modelClass, int modelLayout, Class<ChatHolder> viewHolderClass, DatabaseReference ref, List<ChatObject> mListOfChat) {
-        super(modelClass, modelLayout, viewHolderClass, ref);
-        this.mListOfChat = mListOfChat;
+    public ChatAdapter(List<ChatObject> listOfChats) {
+        mChatList = listOfChats;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (mListOfChat.get(position).getmRecipientOrSenderStatus() == SENDER) {
+        if (mChatList.get(position).getmRecipientOrSenderStatus() == SENDER) {
             Log.e("Adapter", " sender");
             return SENDER;
         } else {
@@ -36,81 +34,142 @@ class ChatAdapter extends FirebaseRecyclerAdapter<ChatObject, ChatHolder> {
     }
 
     @Override
-    protected void populateViewHolder(ChatHolder viewHolder, ChatObject model, int position) {
-
-    }
-
-    @Override
-    public ChatHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ChatHolder viewHolder;
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        RecyclerView.ViewHolder viewHolder;
+        LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
 
         switch (viewType) {
             case SENDER:
-                View viewSender = inflater.inflate(R.layout.chat_item_sent, parent, false);
-                viewHolder = new ChatHolder(viewSender);
+                View viewSender = inflater.inflate(R.layout.chat_item_sent, viewGroup, false);
+                viewHolder = new ChatHolderSender(viewSender);
                 break;
             case RECIPIENT:
-                View viewRecipient = inflater.inflate(R.layout.chat_item_rcv, parent, false);
-                viewHolder = new ChatHolder(viewRecipient);
+                View viewRecipient = inflater.inflate(R.layout.chat_item_rcv, viewGroup, false);
+                viewHolder = new ChatHolderRecipient(viewRecipient);
                 break;
             default:
-                View viewSenderDefault = inflater.inflate(R.layout.chat_item_sent, parent, false);
-                viewHolder = new ChatHolder(viewSenderDefault);
+                View viewSenderDefault = inflater.inflate(R.layout.chat_item_sent, viewGroup, false);
+                viewHolder = new ChatHolderSender(viewSenderDefault);
                 break;
         }
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(ChatHolder viewHolder, int position) {
-        super.onBindViewHolder(viewHolder, position);
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
 
         switch (viewHolder.getItemViewType()) {
             case SENDER:
-                configureSenderView(viewHolder, position);
+                ChatHolderSender chatHolderSender = (ChatHolderSender) viewHolder;
+                configureSenderView(chatHolderSender, position);
                 break;
             case RECIPIENT:
-                configureRecipientView(viewHolder, position);
+                ChatHolderRecipient chatHolderRecipient = (ChatHolderRecipient) viewHolder;
+                configureRecipientView(chatHolderRecipient, position);
                 break;
         }
 
+
     }
 
-    private void configureSenderView(ChatHolder chatHolder, int position) {
-        ChatObject senderFireMessage = mListOfChat.get(position);
-        chatHolder.getmSenderMessageTextView().setText(senderFireMessage.getMessage());
+    private void configureSenderView(ChatHolderSender chatHolderSender, int position) {
+        ChatObject senderFireMessage = mChatList.get(position);
+        chatHolderSender.getmSenderMessageTextView().setText(senderFireMessage.getMessage());
     }
 
-    private void configureRecipientView(ChatHolder chatHolder, int position) {
-        ChatObject recipientFireMessage = mListOfChat.get(position);
-        chatHolder.getmRecipientMessageTextView().setText(recipientFireMessage.getMessage());
+    private void configureRecipientView(ChatHolderRecipient chatHolderRecipient, int position) {
+        ChatObject recipientFireMessage = mChatList.get(position);
+        chatHolderRecipient.getmRecipientMessageTextView().setText(recipientFireMessage.getMessage());
     }
 
     @Override
     public int getItemCount() {
-        return mListOfChat.size();
+        return mChatList.size();
     }
 
-    public void refillAdapter(ChatObject newChatMessage) {
+
+    public void refillAdapter(ChatObject newFireChatMessage) {
 
         /*add new message chat to list*/
-        mListOfChat.add(newChatMessage);
+        mChatList.add(newFireChatMessage);
 
         /*refresh view*/
         notifyItemInserted(getItemCount() - 1);
     }
 
-    public void refillFirsTimeAdapter(List<ChatObject> newChatMessage) {
+    public void refillFirsTimeAdapter(List<ChatObject> newFireChatMessage) {
 
         /*add new message chat to list*/
-        mListOfChat.clear();
-        mListOfChat.addAll(newChatMessage);
+        mChatList.clear();
+        mChatList.addAll(newFireChatMessage);
         /*refresh view*/
         notifyItemInserted(getItemCount() - 1);
     }
 
     public void cleanUp() {
-        mListOfChat.clear();
+        mChatList.clear();
+    }
+
+
+    /*==============ViewHolder===========*/
+
+    /*ViewHolder for Sender*/
+
+    public class ChatHolderSender extends RecyclerView.ViewHolder {
+
+        private TextView mSenderMessageTextView;
+        private TextView mSenderTimeStamp;
+
+        public ChatHolderSender(View itemView) {
+            super(itemView);
+            mSenderMessageTextView = (TextView) itemView.findViewById(R.id.message_text_view_sent);
+            mSenderTimeStamp = (TextView) itemView.findViewById(R.id.timestamp_text_view_sent);
+        }
+
+        public TextView getmSenderMessageTextView() {
+            return mSenderMessageTextView;
+        }
+
+        public void setmSenderMessageTextView(TextView mSenderMessageTextView) {
+            this.mSenderMessageTextView = mSenderMessageTextView;
+        }
+
+        public TextView getmSenderTimeStamp() {
+            return mSenderTimeStamp;
+        }
+
+        public void setmSenderTimeStamp(TextView mSenderTimeStamp) {
+            this.mSenderTimeStamp = mSenderTimeStamp;
+        }
+    }
+
+
+    /*ViewHolder for Recipient*/
+    public class ChatHolderRecipient extends RecyclerView.ViewHolder {
+
+        private TextView mRecipientMessageTextView;
+        private TextView mRecipientTimeStamp;
+
+        public ChatHolderRecipient(View itemView) {
+            super(itemView);
+            mRecipientMessageTextView = (TextView) itemView.findViewById(R.id.message_text_view_rcv);
+            mRecipientTimeStamp = (TextView) itemView.findViewById(R.id.timestamp_text_view_rcv);
+        }
+
+        public TextView getmRecipientMessageTextView() {
+            return mRecipientMessageTextView;
+        }
+
+        public void setmRecipientMessageTextView(TextView mRecipientMessageTextView) {
+            this.mRecipientMessageTextView = mRecipientMessageTextView;
+        }
+
+        public TextView getmRecipientTimeStamp() {
+            return mRecipientTimeStamp;
+        }
+
+        public void setmRecipientTimeStamp(TextView mRecipientTimeStamp) {
+            this.mRecipientTimeStamp = mRecipientTimeStamp;
+        }
     }
 }
