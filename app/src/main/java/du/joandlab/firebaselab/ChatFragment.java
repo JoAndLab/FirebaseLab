@@ -212,6 +212,7 @@ public class ChatFragment extends Fragment {
 
     private String cleanEmailAddress(String email) {
 
+        email = email.toLowerCase();
         //replace dot with comma since firebase does not allow dot
         return email.replace(".", "_");
 
