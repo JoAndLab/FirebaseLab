@@ -44,6 +44,7 @@ public class SignupActivity extends AppCompatActivity {
     final DatabaseReference rootRefUser = FirebaseDatabase.getInstance().getReference(Ref.CHILD_USERS);
     private String userUid;
     private int avatarId;
+    private String createdDate;
 
 /*    @Bind(R.id.input_name) EditText _nameText;
     @Bind(R.id.input_address) EditText _addressText;
@@ -181,6 +182,7 @@ public class SignupActivity extends AppCompatActivity {
             userUid = mFirebaseAuth.getCurrentUser().getUid();
             avatarId = AvatarPicker.generateRandomAvatarForUser();
             UserObject user = new UserObject(fullname, email, avatarId, getDate());
+
             rootRefUser.child(userUid).setValue(user);
         }
     }

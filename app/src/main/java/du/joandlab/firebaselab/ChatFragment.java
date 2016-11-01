@@ -125,7 +125,7 @@ public class ChatFragment extends Fragment {
     private void sendMessageToChat() {
 
         String senderMessage = editChatText.getText().toString();
-        SimpleDateFormat time = new SimpleDateFormat("hh:mm", Locale.getDefault());
+        SimpleDateFormat time = new SimpleDateFormat("EEEE HH:mm", Locale.getDefault());
         mTimeStamp = time.format(new Date());
         senderMessage = senderMessage.trim();
 

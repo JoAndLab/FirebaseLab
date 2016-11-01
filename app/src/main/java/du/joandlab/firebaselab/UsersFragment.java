@@ -138,7 +138,6 @@ public class UsersFragment extends Fragment {
                         mUserAdapter.setNameAndCreatedAt(username, registerdate); //Add it the adapter*/
                     }
                 }
-
             }
 
             @Override

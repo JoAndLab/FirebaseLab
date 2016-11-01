@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * Created by jogus on 2016-10-31.
  */
@@ -121,6 +123,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private TextView mSenderMessageTextView;
         private TextView mSenderTimeStamp;
+        private CircleImageView mSenderAvatar;
 
         public ChatHolderSender(View itemView) {
             super(itemView);

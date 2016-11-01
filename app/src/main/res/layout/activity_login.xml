@@ -12,6 +12,14 @@
         android:paddingLeft="24dp"
         android:paddingRight="24dp">
 
+        <TextView android:id="@+id/login_header"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Lab 6"
+            android:gravity="center"
+            android:textSize="30sp"
+            android:textStyle="bold"/>
+
         <!--  Email Label -->
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_email_layout"

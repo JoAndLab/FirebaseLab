@@ -5,9 +5,11 @@
     tools:context="du.joandlab.firebaselab.AboutFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <WebView
+        android:padding="16dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:text="@string/hello_blank_fragment"
+        android:id="@+id/about_fragment"/>
 
 </FrameLayout>
