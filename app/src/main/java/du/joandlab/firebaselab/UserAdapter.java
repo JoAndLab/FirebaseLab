@@ -27,6 +27,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
 
     private List<UserObject> mFireChatUsers;
     private NewChatInterface mCallback;
+    private UserObject mUser;
     private Context mContext;
     private String mCurrentUserName;
     private String mCurrentUserCreatedAt;
@@ -157,4 +158,5 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
         mCallback = null;
         super.onDetachedFromRecyclerView(recyclerView);
     }
+
 }

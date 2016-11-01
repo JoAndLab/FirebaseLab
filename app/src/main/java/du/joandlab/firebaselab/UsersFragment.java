@@ -53,6 +53,8 @@ public class UsersFragment extends Fragment {
     /* current user email */
     private String mCurrentUserEmail;
 
+    private String mCurrentUserName;
+
     /* List holding user key */
     private List<String> mUsersKeyList;
 
@@ -90,6 +92,7 @@ public class UsersFragment extends Fragment {
 
         if (mFirebaseUser != null) {
             mCurrentUserUid = mFirebaseUser.getUid();
+            mCurrentUserEmail = mFirebaseUser.getEmail();
         }
 
         queryChatUsers();

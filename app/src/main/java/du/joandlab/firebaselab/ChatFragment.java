@@ -52,13 +52,14 @@ public class ChatFragment extends Fragment {
     private String mSenderUid;
 
     /* unique Firebase ref for this chat */
-    private DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference(Ref.CHILD_CHAT);
+    private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
     private DatabaseReference messageRef;
 
     /* Listen to change in chat in firabase-remember to remove it */
     private ChildEventListener mChatListener;
 
     private UserObject userObject;
+    private UserAdapter userAdapter;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -91,6 +92,9 @@ public class ChatFragment extends Fragment {
         mChatAdapter = new ChatAdapter(emptyMessageChat);
 
         mChatRecyclerView.setAdapter(mChatAdapter);
+
+
+        messageRef = rootRef.child(Ref.CHILD_CHAT).child(getChatRef());
 
 
         buttonSend = (Button) view.findViewById(R.id.sendUserMessage);
@@ -126,7 +130,7 @@ public class ChatFragment extends Fragment {
             newMessage.put("recipient", mRecipientUid); // Recipient uid
             newMessage.put("message", senderMessage); // Message
 
-            chatRef.push().setValue(newMessage);
+            messageRef.push().setValue(newMessage);
 
             // Clear text
             editChatText.setText("");
@@ -139,7 +143,7 @@ public class ChatFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mChatListener = chatRef.addChildEventListener(new ChildEventListener() {
+        mChatListener = messageRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
@@ -182,6 +186,27 @@ public class ChatFragment extends Fragment {
 
     }
 
+    /*create chat endpoint for firebase*/
+    public String getChatRef() {
+        return createUniqueChatRef();
+    }
+
+    private String createUniqueChatRef() {
+        String uniqueChatRef = "";
+
+        uniqueChatRef = cleanEmailAddress(userObject.getmCurrentUserEmail()) + "-" + cleanEmailAddress(userObject.getEmail());
+
+        return uniqueChatRef;
+    }
+
+
+    private String cleanEmailAddress(String email) {
+
+        //replace dot with comma since firebase does not allow dot
+        return email.replace(".", "_");
+
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -205,7 +230,7 @@ public class ChatFragment extends Fragment {
         // Remove listener
         if (mChatListener != null) {
             // Remove listener
-            chatRef.removeEventListener(mChatListener);
+            messageRef.removeEventListener(mChatListener);
         }
         // Clean chat message
         mChatAdapter.cleanUp();
