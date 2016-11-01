@@ -194,8 +194,18 @@ public class ChatFragment extends Fragment {
     private String createUniqueChatRef() {
         String uniqueChatRef = "";
 
-        uniqueChatRef = cleanEmailAddress(userObject.getmCurrentUserEmail()) + "-" + cleanEmailAddress(userObject.getEmail());
+        String str1 = mRecipientUid.replaceAll("\\D+", "");
+        String str2 = mSenderUid.replaceAll("\\D+", "");
 
+        long id1 = Long.parseLong(str1);
+        long id2 = Long.parseLong(str2);
+
+        if (id2 > id1) {
+            uniqueChatRef = cleanEmailAddress(userObject.getmCurrentUserEmail()) + "-" + cleanEmailAddress(userObject.getEmail());
+        } else {
+
+            uniqueChatRef = cleanEmailAddress(userObject.getEmail()) + "-" + cleanEmailAddress(userObject.getmCurrentUserEmail());
+        }
         return uniqueChatRef;
     }
 
