@@ -26,6 +26,7 @@ class UserObject implements Parcelable {
     private String mCurrentUserName;
     private String mCurrentUserUid;
     private String mCurrentUserEmail;
+    private int mCurrentAvatarId;
     private String mCurrentUserCreatedAt;
 
     public UserObject(String name, String email, int avatarId, String registerdate) {
@@ -54,6 +55,7 @@ class UserObject implements Parcelable {
         recipientUid = pIN.readString();
         mCurrentUserName = pIN.readString();
         mCurrentUserUid = pIN.readString();
+        mCurrentAvatarId = pIN.readInt();
         mCurrentUserEmail = pIN.readString();
         mCurrentUserCreatedAt = pIN.readString();
     }
@@ -201,6 +203,7 @@ class UserObject implements Parcelable {
         parcel.writeString(recipientUid);
         parcel.writeString(mCurrentUserName);
         parcel.writeString(mCurrentUserUid);
+        parcel.writeInt(mCurrentAvatarId);
         parcel.writeString(mCurrentUserEmail);
         parcel.writeString(mCurrentUserCreatedAt);
     }

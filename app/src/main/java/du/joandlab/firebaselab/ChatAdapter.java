@@ -1,5 +1,8 @@
 package du.joandlab.firebaselab;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,11 +21,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<ChatObject> mChatList;
+    private Context mContext;
     private static final int SENDER = 0;
     private static final int RECIPIENT = 1;
 
-    public ChatAdapter(List<ChatObject> listOfChats) {
+    public ChatAdapter(List<ChatObject> listOfChats, Context context) {
         mChatList = listOfChats;
+        mContext = context;
     }
 
     @Override
@@ -78,12 +83,18 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         ChatObject senderFireMessage = mChatList.get(position);
         chatHolderSender.getmSenderMessageTextView().setText(senderFireMessage.getMessage());
         chatHolderSender.getmSenderTimeStamp().setText(senderFireMessage.getTimeStamp());
+        int senderAvatarId = AvatarPicker.getDrawableAvatarId(senderFireMessage.getAvatarId());
+        Drawable avatarDrawable = ContextCompat.getDrawable(mContext, senderAvatarId);
+        chatHolderSender.getmSenderAvatar().setImageDrawable(avatarDrawable);
     }
 
     private void configureRecipientView(ChatHolderRecipient chatHolderRecipient, int position) {
         ChatObject recipientFireMessage = mChatList.get(position);
         chatHolderRecipient.getmRecipientMessageTextView().setText(recipientFireMessage.getMessage());
         chatHolderRecipient.getmRecipientTimeStamp().setText(recipientFireMessage.getTimeStamp());
+        int recipientAvatarId = AvatarPicker.getDrawableAvatarId(recipientFireMessage.getAvatarId());
+        Drawable avatarDrawable = ContextCompat.getDrawable(mContext, recipientAvatarId);
+        chatHolderRecipient.getmRecipientAvatar().setImageDrawable(avatarDrawable);
     }
 
     @Override
@@ -129,6 +140,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             super(itemView);
             mSenderMessageTextView = (TextView) itemView.findViewById(R.id.message_text_view_sent);
             mSenderTimeStamp = (TextView) itemView.findViewById(R.id.timestamp_text_view_sent);
+            mSenderAvatar = (CircleImageView) itemView.findViewById(R.id.senderAvatar);
         }
 
         public TextView getmSenderMessageTextView() {
@@ -146,6 +158,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public void setmSenderTimeStamp(TextView mSenderTimeStamp) {
             this.mSenderTimeStamp = mSenderTimeStamp;
         }
+
+        public CircleImageView getmSenderAvatar() {
+            return mSenderAvatar;
+        }
+
+        public void setmSenderAvatar(CircleImageView mSenderAvatar) {
+            this.mSenderAvatar = mSenderAvatar;
+        }
     }
 
 
@@ -154,11 +174,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private TextView mRecipientMessageTextView;
         private TextView mRecipientTimeStamp;
+        private CircleImageView mRecipientAvatar;
 
         public ChatHolderRecipient(View itemView) {
             super(itemView);
             mRecipientMessageTextView = (TextView) itemView.findViewById(R.id.message_text_view_rcv);
             mRecipientTimeStamp = (TextView) itemView.findViewById(R.id.timestamp_text_view_rcv);
+            mRecipientAvatar = (CircleImageView) itemView.findViewById(R.id.recipientAvatar);
         }
 
         public TextView getmRecipientMessageTextView() {
@@ -175,6 +197,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         public void setmRecipientTimeStamp(TextView mRecipientTimeStamp) {
             this.mRecipientTimeStamp = mRecipientTimeStamp;
+        }
+
+        public CircleImageView getmRecipientAvatar() {
+            return mRecipientAvatar;
+        }
+
+        public void setmRecipientAvatar(CircleImageView mRecipientAvatar) {
+            this.mRecipientAvatar = mRecipientAvatar;
         }
     }
 }

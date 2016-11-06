@@ -10,6 +10,7 @@ public class ChatObject {
     private String recipient;
     private String sender;
     private String timeStamp;
+    private int avatarId;
 
     private int mRecipientOrSenderStatus;
 
@@ -51,5 +52,13 @@ public class ChatObject {
 
     public void setTimeStamp(String timeStamp) {
         this.timeStamp = timeStamp;
+    }
+
+    public int getAvatarId() {
+        return avatarId;
+    }
+
+    public void setAvatarId(int avatarId) {
+        this.avatarId = avatarId;
     }
 }
