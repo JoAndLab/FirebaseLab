@@ -5,9 +5,11 @@ package du.joandlab.firebaselab;
  */
 
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -45,5 +47,14 @@ public class SettingsActivity extends AppCompatActivity {
         // Change theme (default light)
         _settingsTheme = sharedPrefs.getBoolean("change_theme", false);
         setTheme(_settingsTheme ? R.style.AppThemeDark : R.style.AppTheme );
+    }
+
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+    TaskStackBuilder.create(getBaseContext())
+            .addNextIntent(new Intent(getBaseContext(), MainActivity.class))
+            .addNextIntent(this.getIntent())
+            .startActivities();
     }
 }

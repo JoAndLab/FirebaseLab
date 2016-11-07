@@ -1,6 +1,7 @@
 package du.joandlab.firebaselab;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -13,6 +14,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -232,6 +234,24 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         mDrawer.closeDrawers();
     }
 
+    @Override
+    public void onBackPressed() {
+        // Disable going back to the MainActivity, show alert with choices
+        //moveTaskToBack(true);
+        new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert).setTitle(" Exit Application")
+                .setMessage("Are you sure you want to exit?")
+                .setPositiveButton("yes, I'm sure", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        intent.addCategory(Intent.CATEGORY_HOME);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                    }
+                }).setNegativeButton("no, stay here", null).show();
+    }
+
     // `onPostCreate` called when activity start-up is complete after `onStart()`
     // NOTE! Make sure to override the method with only a single `Bundle` argument
     @Override
@@ -305,10 +325,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals("change_theme")) {
-            recreate();
-        }
-        else if (key.equals("setting_change_password")) {
+        if (key.equals("setting_change_password")) {
             _settingsChangePassword = sharedPrefs.getString("setting_change_password", "");
             changePassword(_settingsChangePassword);
         }
