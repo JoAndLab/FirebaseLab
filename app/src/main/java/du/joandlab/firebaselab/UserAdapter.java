@@ -1,6 +1,7 @@
 package du.joandlab.firebaselab;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
@@ -27,10 +28,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
 
     private List<UserObject> mFireChatUsers;
     private NewChatInterface mCallback;
-    private UserObject mUser;
     private Context mContext;
     private String mCurrentUserName;
-    private String mCurrentUserCreatedAt;
+    private int mCurrentAvatarId;
+
+    private static final String PREFERENCES_FILE = "My_settings";
 
     public UserAdapter(Context context, List<UserObject> fireChatUsers) {
         mFireChatUsers = fireChatUsers;
@@ -87,11 +89,16 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
         notifyDataSetChanged();
     }
 
-    public void setNameAndCreatedAt(String username, String registerdate) {
+    public void setNameAndCreatedAt(String username, int avatarid) {
 
         // Set current user name and time account created at
         mCurrentUserName = username;
-        mCurrentUserCreatedAt = registerdate;
+        mCurrentAvatarId = avatarid;
+
+        saveSharedSetting(mContext, "currentUserAvatarId", String.valueOf(avatarid));
+
+        Log.d(TAG, "setNameAndCreatedAt: " + username);
+        Log.d(TAG, "setNameAndCreatedAt: " + avatarid);
     }
 
     public void changeUser(int index, UserObject user) {
@@ -99,6 +106,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
         // Handle change on each user and notify change
         mFireChatUsers.set(index, user);
         notifyDataSetChanged();
+    }
+
+    public static void saveSharedSetting(Context ctx, String settingName, String settingValue) {
+        SharedPreferences sharedPref = ctx.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(settingName, settingValue);
+        editor.apply();
     }
 
 
@@ -142,7 +156,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
 
             UserObject user = mFireChatUsers.get(position); // Get use object
 
-            Log.d(TAG, "onClick: " + user.getRecipientUid());
+            saveSharedSetting(mContext, "recipientAvatarId", String.valueOf(user.getAvatarId()));
 
             try {
                 mCallback.userToNewChat(user);

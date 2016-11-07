@@ -18,7 +18,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +31,7 @@ public class UsersFragment extends Fragment {
     private static final String TAG = UsersFragment.class.getSimpleName();
     private RecyclerView recyclerView;
     private UserAdapter mUserAdapter;
-    private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
     private DatabaseReference userRef = FirebaseDatabase.getInstance().getReference(Ref.CHILD_USERS);
-    private DatabaseReference connectionRef = FirebaseDatabase.getInstance().getReference(Ref.CHILD_CONNECTION);
 
     private FirebaseUser mFirebaseUser;
     private FirebaseAuth mFirebaseAuth;
@@ -44,16 +41,11 @@ public class UsersFragment extends Fragment {
     /* Listen to users change in firebase-remember to detach it */
     private ChildEventListener mListenerUsers;
 
-    /* Listen for user presence */
-    private ValueEventListener mConnectedListener;
-
     /* current user uid */
     private String mCurrentUserUid;
 
     /* current user email */
     private String mCurrentUserEmail;
-
-    private String mCurrentCreatedAt;
 
     /* List holding user key */
     private List<String> mUsersKeyList;
@@ -134,8 +126,9 @@ public class UsersFragment extends Fragment {
                     } else {
                         UserObject currentUser = dataSnapshot.getValue(UserObject.class);
                         String username = currentUser.getUsername(); //Get current user first name
-                        String registerdate = currentUser.getRegisterdate(); //Get current user date creation
-                        mUserAdapter.setNameAndCreatedAt(username, registerdate); //Add it the adapter*/
+                        int avatarId = currentUser.getAvatarId(); //Get current user avatarId
+                        mUserAdapter.setNameAndCreatedAt(username, avatarId); //Add it the adapter*/
+                        Log.d(TAG, "onChildAdded: avatarID = " + avatarId);
                     }
                 }
             }
@@ -178,34 +171,6 @@ public class UsersFragment extends Fragment {
 
             }
         });
-
-        /*final DatabaseReference myConnection = userRef.child(mCurrentUserUid).child(Ref.CHILD_CONNECTION);
-
-        mConnectedListener = myConnection.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String connection = (String) dataSnapshot.getValue();
-                if (connection) {
-
-                    myConnection.setValue(Ref.KEY_ONLINE);
-
-                    // When this device disconnects, remove it
-                    myConnection.onDisconnect().setValue(Ref.KEY_OFFLINE);
-                    Toast.makeText(getActivity(), "Connected to Firebase", Toast.LENGTH_SHORT).show();
-
-                } else {
-
-                    Toast.makeText(getActivity(), "Disconnected from Firebase", Toast.LENGTH_SHORT).show();
-
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });*/
     }
 
     private void hideProgressBarForUsers() {
@@ -235,9 +200,5 @@ public class UsersFragment extends Fragment {
         if (mListenerUsers != null) {
             userRef.removeEventListener(mListenerUsers);
         }
-        if (mConnectedListener != null) {
-            connectionRef.removeEventListener(mConnectedListener);
-        }
     }
-
 }

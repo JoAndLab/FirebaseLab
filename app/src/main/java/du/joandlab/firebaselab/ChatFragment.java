@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -38,10 +37,8 @@ public class ChatFragment extends Fragment {
     private static final String TAG = ChatFragment.class.getSimpleName();
 
     private RecyclerView mChatRecyclerView;
-    private TextView mChatMessage;
     private EditText editChatText;
     private Button buttonSend;
-    private TextView mChatTimeStamp;
     private ChatAdapter mChatAdapter;
 
 
@@ -57,8 +54,6 @@ public class ChatFragment extends Fragment {
 
     private String mTimeStamp;
 
-    private int mAvatarId;
-
     /* unique Firebase ref for this chat */
     private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
     private DatabaseReference messageRef;
@@ -67,8 +62,6 @@ public class ChatFragment extends Fragment {
     private ChildEventListener mChatListener;
 
     private UserObject userObject;
-    private ChatObject chatObject;
-    private UserAdapter userAdapter;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -87,9 +80,6 @@ public class ChatFragment extends Fragment {
 
         // Set sender uid;
         mSenderUid = userObject.getmCurrentUserUid();
-
-        chatObject = new ChatObject();
-        chatObject.setAvatarId(userObject.getAvatarId());
 
         // Reference to recyclerView and text view
         mChatRecyclerView = (RecyclerView) view.findViewById(R.id.chat_recycler_view);
@@ -131,6 +121,7 @@ public class ChatFragment extends Fragment {
         this.userObject = userObject;
 
     }
+
 
     private void sendMessageToChat() {
 

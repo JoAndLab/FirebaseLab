@@ -1,6 +1,7 @@
 package du.joandlab.firebaselab;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -14,16 +15,25 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static android.content.ContentValues.TAG;
+
 /**
  * Created by jogus on 2016-10-31.
  */
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private static final String PREFERENCES_FILE = "My_settings";
+
     private List<ChatObject> mChatList;
     private Context mContext;
     private static final int SENDER = 0;
     private static final int RECIPIENT = 1;
+
+    private int mSenderAvatarId;
+    private int mRecipientAvatarId;
+
+
 
     public ChatAdapter(List<ChatObject> listOfChats, Context context) {
         mChatList = listOfChats;
@@ -44,6 +54,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         RecyclerView.ViewHolder viewHolder;
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
+        mSenderAvatarId = Integer.valueOf(readSharedSetting(mContext, "currentUserAvatarId", "0"));
+        mRecipientAvatarId = Integer.valueOf(readSharedSetting(mContext, "recipientAvatarId", "0"));
+        Log.d(TAG, "onCreateViewHolder: " + mSenderAvatarId);
+        Log.d(TAG, "onCreateViewHolder: " + mRecipientAvatarId);
 
         switch (viewType) {
             case SENDER:
@@ -83,7 +97,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         ChatObject senderFireMessage = mChatList.get(position);
         chatHolderSender.getmSenderMessageTextView().setText(senderFireMessage.getMessage());
         chatHolderSender.getmSenderTimeStamp().setText(senderFireMessage.getTimeStamp());
-        int senderAvatarId = AvatarPicker.getDrawableAvatarId(senderFireMessage.getAvatarId());
+        int senderAvatarId = AvatarPicker.getDrawableAvatarId(mSenderAvatarId);
         Drawable avatarDrawable = ContextCompat.getDrawable(mContext, senderAvatarId);
         chatHolderSender.getmSenderAvatar().setImageDrawable(avatarDrawable);
     }
@@ -92,9 +106,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         ChatObject recipientFireMessage = mChatList.get(position);
         chatHolderRecipient.getmRecipientMessageTextView().setText(recipientFireMessage.getMessage());
         chatHolderRecipient.getmRecipientTimeStamp().setText(recipientFireMessage.getTimeStamp());
-        int recipientAvatarId = AvatarPicker.getDrawableAvatarId(recipientFireMessage.getAvatarId());
+        int recipientAvatarId = AvatarPicker.getDrawableAvatarId(mRecipientAvatarId);
         Drawable avatarDrawable = ContextCompat.getDrawable(mContext, recipientAvatarId);
         chatHolderRecipient.getmRecipientAvatar().setImageDrawable(avatarDrawable);
+    }
+
+    public static String readSharedSetting(Context ctx, String settingName, String defaultValue) {
+        SharedPreferences sharedPref = ctx.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        return sharedPref.getString(settingName, defaultValue);
     }
 
     @Override

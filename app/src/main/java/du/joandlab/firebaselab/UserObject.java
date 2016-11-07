@@ -184,6 +184,14 @@ class UserObject implements Parcelable {
         this.updated = updated;
     }
 
+    public int getmCurrentAvatarId() {
+        return mCurrentAvatarId;
+    }
+
+    public void setmCurrentAvatarId(int mCurrentAvatarId) {
+        this.mCurrentAvatarId = mCurrentAvatarId;
+    }
+
     @Override
     public int describeContents() {
         return 0;
