@@ -82,6 +82,16 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Set home-fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        try {
+            fragmentManager.beginTransaction().replace(R.id.frame_container, UsersFragment.class.newInstance()).commit();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
         if (savedInstanceState != null) {
             mCurrentSelectedPosition =
                     savedInstanceState.getInt(STATE_SELECTED_POSITION);

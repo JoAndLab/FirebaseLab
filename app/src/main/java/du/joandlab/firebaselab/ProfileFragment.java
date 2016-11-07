@@ -65,7 +65,7 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-
+        getActivity().setTitle("Profile");
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         userUid = mFirebaseUser.getUid();

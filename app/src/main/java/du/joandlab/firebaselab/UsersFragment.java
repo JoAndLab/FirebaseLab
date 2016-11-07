@@ -81,7 +81,7 @@ public class UsersFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        getActivity().setTitle("Chat");
         if (mFirebaseUser != null) {
             mCurrentUserUid = mFirebaseUser.getUid();
             mCurrentUserEmail = mFirebaseUser.getEmail();
@@ -89,7 +89,6 @@ public class UsersFragment extends Fragment {
         }
 
         queryChatUsers();
-
     }
 
     private void queryChatUsers() {

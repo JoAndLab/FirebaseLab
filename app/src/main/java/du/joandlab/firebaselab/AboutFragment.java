@@ -29,6 +29,7 @@ public class AboutFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        getActivity().setTitle("About");
         WebView web = (WebView) view.findViewById(R.id.about_fragment);
         web.loadUrl("file:///android_asset/about.html");
     }
