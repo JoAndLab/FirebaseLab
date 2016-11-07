@@ -34,6 +34,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
 
     private static final String PREFERENCES_FILE = "My_settings";
 
+    private String mTimeStamp;
+
     public UserAdapter(Context context, List<UserObject> fireChatUsers) {
         mFireChatUsers = fireChatUsers;
         mContext = context;
@@ -55,7 +57,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
     @Override
     public void onBindViewHolder(UserHolder holder, int position) {
 
-        UserObject userObject = mFireChatUsers.get(position);
+        final UserObject userObject = mFireChatUsers.get(position);
 
         // Set avatar
         int userAvatarId = AvatarPicker.getDrawableAvatarId(userObject.getAvatarId());
@@ -63,18 +65,23 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
         holder.getVh_userAvatar().setImageDrawable(avatarDrawable);
 
         // Set username
-        holder.getVh_userName().setText(userObject.getUsername());
+        if(Objects.equals(userObject.getUsername(), "") || Objects.equals(userObject.getUsername(), null))
+            holder.getVh_userName().setText(userObject.getName());
+        else
+            holder.getVh_userName().setText(userObject.getUsername());
 
         // Set presence status
         holder.getVh_connection().setText(userObject.getConnection());
 
         // Set presence text color
-        if (Objects.equals(userObject.getConnection(), Ref.KEY_ONLINE))
+        if (Objects.equals(userObject.getConnection(), Ref.KEY_ONLINE)) {
             holder.getVh_connection().setTextColor(Color.parseColor("#00FF00"));
-        else
+            holder.getVh_userAvatar().setBorderColor(Color.parseColor("#00FF00"));
+        }
+        else {
             holder.getVh_connection().setTextColor(Color.parseColor("#FF0000"));
-
-
+            holder.getVh_userAvatar().setBorderColor(Color.parseColor("#FF0000"));
+        }
     }
 
     @Override
